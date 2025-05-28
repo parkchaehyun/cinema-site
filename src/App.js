@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import MovieSelector from './components/MovieSelector'
+import MovieScreeningsList from './components/MovieScreeningsList'
+import CinemaMap from './components/CinemaMap'
 
 function App() {
+  const [view, setView] = useState('movie')  // or 'map'
+  const [movieId, setMovieId] = useState(null)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <nav>
+        <button onClick={() => setView('movie')}>🎬 Movies</button>
+        <button onClick={() => setView('map')}>🗺️ Map</button>
+      </nav>
+
+      {view === 'movie' && (
+        <>
+          <MovieSelector onSelect={setMovieId} />
+          <MovieScreeningsList movieId={parseInt(movieId)} />
+        </>
+      )}
+
+      {view === 'map' && <CinemaMap />}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -1,0 +1,49 @@
+﻿/* CinemaOverlay.css */
+.overlay-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    z-index: 1000;
+    overflow: auto;
+  }
+  
+  .overlay-window {
+    background: #fff;
+    border-radius: 8px;
+    width: 90vw;
+    height: 90vh;
+    padding: 1.5rem;
+    position: relative;
+    overflow-y: auto;
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .movie-block + .movie-block {
+    margin-top: 2rem;
+  }
+  
+  .movie-block h3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .show-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }  
