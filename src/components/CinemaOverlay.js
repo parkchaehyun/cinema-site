@@ -42,7 +42,7 @@ export default function CinemaOverlay({ cinema, onClose }) {
     <div className="overlay-backdrop" onClick={onClose}>
       <div className="overlay-window" onClick={e => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>×</button>
-        <h2>{cinema.name}</h2>
+        <h2>{cinema.cinema_name}</h2>
 
         {dates.length > 0 && (
           <div className="date-tabs">

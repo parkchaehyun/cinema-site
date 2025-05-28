@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGeo }          from '../hooks/useGeo';
 import { useNaverMaps }    from '../hooks/useNaverMaps';
-import { listCinemas }     from '../services/screeningService';
+import { listCinemasByDistance } from '../services/cinemaService'
 import CinemaOverlay       from './CinemaOverlay';
 
 export default function CinemaMap() {
@@ -12,7 +12,7 @@ export default function CinemaMap() {
   const [selected, setSelected] = useState(null);
   const mapRef = useRef(null);
 
-  useEffect(() => { if (mapsReady) listCinemas().then(setCinemas); }, [mapsReady]);
+  useEffect(() => { if (mapsReady) listCinemasByDistance(lat, lng).then(setCinemas); }, [mapsReady, lat, lng]);
 
   useEffect(() => {
     if (!mapsReady || lat == null || lng == null) return;
@@ -37,8 +37,33 @@ export default function CinemaMap() {
 
   return (
     <>
-      <div ref={mapRef} style={{ height: '80vh', width: '100%' }} />
-      {selected && <CinemaOverlay cinema={selected} onClose={() => setSelected(null)} />}
+      {/* Map */}
+      <div ref={mapRef} style={{ width: '100%', height: '60vh' }} />
+
+      {/* List under map, already sorted by distance_m from SQL */}
+      <div style={{ maxHeight: '20vh', overflowY: 'auto', padding: '0.5rem' }}>
+        {cinemas.map(c => (
+          <div
+            key={c.cinema_code}
+            onClick={() => setSelected(c)}
+            style={{
+              padding: '0.5rem',
+              borderBottom: '1px solid #eee',
+              cursor: 'pointer',
+            }}
+          >
+            <strong>{c.cinema_name}</strong>
+            <span style={{ float: 'right' }}>
+              {(c.distance_m / 1000).toFixed(1)} km
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Full-screen overlay */}
+      {selected && (
+        <CinemaOverlay cinema={selected} onClose={() => setSelected(null)} />
+      )}
     </>
   );
 }
