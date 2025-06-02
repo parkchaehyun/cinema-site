@@ -1,70 +1,79 @@
-# Getting Started with Create React App
+# 🎬 Art Film Screening Map
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2d83c101-2429-4e3e-a58c-2ab07ef9c59a" alt="App Screenshot" width="808" />
+</p>
 
-## Available Scripts
 
-In the project directory, you can run:
+A React-based web application that displays nearby art-film screening times across various independent and chain theaters in Korea. Users can select a movie and instantly view where and when it's playing on an interactive map, sorted by proximity to their current location.
 
-### `npm start`
+## 🌐 Website Link
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+[https://cinema.cpark.dev](https://cinema.cpark.dev)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📦 Tech Stack
 
-### `npm test`
+- **Frontend**: React, Leaflet.js, Supabase
+- **Backend**: Supabase PostgreSQL
+- **Crawler**: Python (Selenium + BeautifulSoup + Supabase Client)
+- **Deployment**: Vercel (frontend), AWS Lambda (crawler)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 🧭 Features
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- 🎞️ Movie selection dropdown from Supabase  
+- 🗺️ Interactive Leaflet map showing cinema markers  
+- 📍 Distance-based sorting using geolocation  
+- 🧾 Screening info cards for each selected cinema  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🏗️ Architecture
 
-### `npm run eject`
+```
+┌───────┐     ┌──────────────────┐     ┌────────────────────┐
+│ User  │ ──▶ │ Frontend (React) │ ──▶ │ Backend (Supabase) │
+└───────┘     └──────────────────┘     └────────────────────┘
+                                                  ▲
+                                                  │
+                                      ┌───────────┴──────────┐
+                                      │ Crawler (AWS Lambda) │
+                                      └──────────────────────┘
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+🧩 Crawler source code:  
+**Cinema Crawler Repository** [https://github.com/parkchaehyun/cinema-crawler](https://github.com/parkchaehyun/cinema-crawler)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🗂️ Project Structure
 
-## Learn More
+```
+public/
+  └── index.html                 # HTML entry point
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+src/
+  ├── App.js                     # Main compponent
+  ├── components/              
+  │   ├── CinemaMap.js           # Map with cinema markers
+  │   ├── CinemaOverlay.js       # Popup for cinema screenings
+  │   ├── MovieScreeningsList.js # List view of screening cards
+  │   ├── ScreeningCard.js       # Individual movie card
+  ├── hooks/                   
+  │   ├── useGeo.js              # Hook to get user geolocation
+  │   └── useNaverMaps.js        # Hook to integrate Naver Map SDK
+  ├── lib/
+  │   └── supabase.js            # Supabase client configuration
+  └── services/                  # API access layer to Supabase
+      ├── cinemaService.js       # Fetch cinema metadata
+      ├── movieService.js        # Fetch list of movies
+      └── screeningService.js    # Fetch screening data
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## License
 
-### Code Splitting
+The MIT License (MIT)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Copyright (c) 2025 Chaehyun Park
