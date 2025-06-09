@@ -1,31 +1,30 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useGeo } from '../hooks/useGeo'; // Original import
+import { useGeo } from '../hooks/useGeo';
 import {
   listMovieDates,
   getNearbyScreenings,
-} from '../services/screeningService'; // Original imports
-import { listUpcomingMovies } from '../services/movieService'; // New import for fetching movies
-import ScreeningCard from './ScreeningCard'; // Original import
+} from '../services/screeningService';
+import { listUpcomingMovies } from '../services/movieService';
+import ScreeningCard from './ScreeningCard';
 
-export default function MovieScreeningsList() { // Removed movieId prop, now managed internally
-  const { lat, lng, error: geoError } = useGeo();
-  const [movies, setMovies] = useState([]); // New state for list of movies
-  const [selectedMovieId, setSelectedMovieId] = useState(null); // New state for selected movie
+export default function MovieScreeningsList() {
+  const { lat, lng, error: geoError, isLoading: isGeoLoading, requestLocation } = useGeo();
+  const [movies, setMovies] = useState([]);
+  const [selectedMovieId, setSelectedMovieId] = useState(null);
   const [dates, setDates] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null); // Renamed 'date' to 'selectedDate' for clarity
-  const [screeningsData, setScreeningsData] = useState([]); // Renamed 'data' to 'screeningsData' for clarity
-  const [isLoadingMovies, setIsLoadingMovies] = useState(true); // New loading state
-  const [isLoadingDates, setIsLoadingDates] = useState(false); // New loading state
-  const [isLoadingScreenings, setIsLoadingScreenings] = useState(false); // Renamed 'isLoading'
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [screeningsData, setScreeningsData] = useState([]);
+  const [isLoadingMovies, setIsLoadingMovies] = useState(true);
+  const [isLoadingDates, setIsLoadingDates] = useState(false);
+  const [isLoadingScreenings, setIsLoadingScreenings] = useState(false);
 
-  // Load movies on component mount
   useEffect(() => {
     setIsLoadingMovies(true);
-    listUpcomingMovies() // Fetch list of movies
+    listUpcomingMovies()
       .then(mvs => {
         setMovies(mvs);
         if (mvs.length > 0) {
-          setSelectedMovieId(mvs[0].id); // Auto-select the first movie
+          setSelectedMovieId(mvs[0].id);
         }
         setIsLoadingMovies(false);
       })
@@ -35,34 +34,32 @@ export default function MovieScreeningsList() { // Removed movieId prop, now man
       });
   }, []);
 
-  /* Load dates when selectedMovieId changes */
   useEffect(() => {
     if (!selectedMovieId) {
       setDates([]);
       setSelectedDate(null);
       return;
     }
-    setIsLoadingDates(true); // Set loading state for dates
-    listMovieDates(selectedMovieId) // Use selectedMovieId
+    setIsLoadingDates(true);
+    listMovieDates(selectedMovieId)
       .then(dts => {
         setDates(dts);
         setSelectedDate(dts[0] ?? null);
-        setIsLoadingDates(false); // Clear loading state
+        setIsLoadingDates(false);
       })
       .catch(err => {
         console.error("Error loading dates:", err);
         setIsLoadingDates(false);
       });
-  }, [selectedMovieId]); // Dependency now selectedMovieId
+  }, [selectedMovieId]);
 
-  /* Load screenings when selectedMovieId, selectedDate, lat, or lng change */
   useEffect(() => {
     if (selectedMovieId && selectedDate && lat && lng) {
-      setIsLoadingScreenings(true); // Set loading state for screenings
-      getNearbyScreenings(selectedMovieId, lat, lng, selectedDate) // Use selectedMovieId and selectedDate
+      setIsLoadingScreenings(true);
+      getNearbyScreenings(selectedMovieId, lat, lng, selectedDate)
         .then(data => {
-          setScreeningsData(data); // Use screeningsData
-          setIsLoadingScreenings(false); // Clear loading state
+          setScreeningsData(data);
+          setIsLoadingScreenings(false);
         })
         .catch(err => {
           console.error("Error loading screenings:", err);
@@ -72,24 +69,40 @@ export default function MovieScreeningsList() { // Removed movieId prop, now man
         setScreeningsData([]);
         setIsLoadingScreenings(false);
     }
-  }, [selectedMovieId, selectedDate, lat, lng]); // Dependencies updated
+  }, [selectedMovieId, selectedDate, lat, lng]);
 
-  // Helper to format date for display
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', weekday: 'short' });
   };
 
-  if (geoError) {
+  if (isGeoLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-inter">
-        <p className="text-red-500 text-lg">Geolocation error: {geoError}. Please enable location services.</p>
+        <p className="text-gray-600 text-lg">Getting your location...</p>
       </div>
     );
   }
 
-  // Main rendering structure
+  if (geoError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 font-inter text-center">
+        <p className="text-lg text-red-600 mb-2">Could not get your location</p>
+        <p className="text-gray-600 mb-4">{geoError}</p>
+        <button
+          onClick={requestLocation}
+          className="px-6 py-2 rounded-full text-lg font-medium transition-colors duration-200 bg-blue-600 text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          Try Again
+        </button>
+        <p className="text-gray-500 text-sm mt-4 max-w-md">
+          To see nearby cinemas, please allow location access in your browser. You may need to update your site settings.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 font-inter flex flex-col items-center">
       <style>
@@ -98,13 +111,12 @@ export default function MovieScreeningsList() { // Removed movieId prop, now man
         .font-inter {
           font-family: 'Inter', sans-serif;
         }
-        /* Hide scrollbar for date tabs and movie selection but allow scrolling */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
         .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         `}
       </style>
@@ -118,23 +130,21 @@ export default function MovieScreeningsList() { // Removed movieId prop, now man
           ) : movies.length === 0 ? (
             <p className="text-gray-600">No movies available.</p>
           ) : (
-            <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide px-4 pt-4"> {/* Added px-4 and pt-4 here */}
+            <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide px-4 pt-4">
               {movies.map(movie => (
                 <button
                   key={movie.id}
-                  className="flex-shrink-0 transition-all duration-200" // Button acts as clickable wrapper
+                  className="flex-shrink-0 transition-all duration-200"
                   onClick={() => setSelectedMovieId(movie.id)}
                 >
-                  {/* This outer div will define the dimensions and receive the ring/shadow */}
                   <div
                     className={`w-32 h-auto rounded-lg shadow-md
                       ${selectedMovieId === movie.id
-                        ? 'ring-4 ring-blue-500 ring-offset-2' // Ring and offset applied here
-                        : 'hover:shadow-lg' // Hover shadow also applied here
+                        ? 'ring-4 ring-blue-500 ring-offset-2'
+                        : 'hover:shadow-lg'
                       }`}
                   >
-                    {/* This inner div will handle the overflow-hidden for the content */}
-                    <div className="w-full h-full rounded-lg overflow-hidden"> {/* w-full h-full to fill parent */}
+                    <div className="w-full h-full rounded-lg overflow-hidden">
                       <img
                         src={movie.poster_url || "https://placehold.co/150x225/CCCCCC/333333?text=No+Poster"}
                         alt={movie.title}
@@ -152,10 +162,8 @@ export default function MovieScreeningsList() { // Removed movieId prop, now man
           )}
         </div>
 
-        {/* Conditional rendering for dates and screenings based on movie selection */}
         {selectedMovieId ? (
           <>
-            {/* Date tabs */}
             <div className="date-tabs flex overflow-x-auto pb-2 space-x-2 mb-4 md:mb-6 scrollbar-hide">
               {isLoadingDates ? (
                 <p className="text-gray-600">Loading dates...</p>
@@ -177,14 +185,12 @@ export default function MovieScreeningsList() { // Removed movieId prop, now man
                 ))
               )}
             </div>
-
-            {/* Loading indicator for screenings */}
-            {isLoadingScreenings && selectedDate && lat && lng ? (
+            
+            {isLoadingScreenings ? (
               <div className="flex justify-center items-center h-48">
-                <p className="text-gray-600 text-lg">Loading showtimes for {formatDateForDisplay(selectedDate)}...</p>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
               </div>
             ) : (
-              /* Cinema cards */
               <div className="cinema-list space-y-4">
                 {screeningsData.length === 0
                   ? <p className="text-gray-600 text-center py-8">No showings on {formatDateForDisplay(selectedDate)}.</p>
@@ -194,8 +200,6 @@ export default function MovieScreeningsList() { // Removed movieId prop, now man
                           <h3 className="text-xl sm:text-2xl font-semibold text-gray-800">{c.cinema_name}</h3>
                           <p className="text-sm text-gray-600">{c.distance_m ? `${(c.distance_m / 1000).toFixed(1)} km` : ''}</p>
                         </div>
-
-                        {/* Showtimes laid out tight & wrapping */}
                         <div
                           className="showtimes flex flex-wrap gap-2"
                         >

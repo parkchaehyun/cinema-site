@@ -1,61 +1,74 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
-import { useGeo }          from '../hooks/useGeo';
-import { useNaverMaps }    from '../hooks/useNaverMaps';
+import { useGeo } from '../hooks/useGeo';
+import { useNaverMaps } from '../hooks/useNaverMaps';
 import { listCinemasByDistance } from '../services/cinemaService'
-import CinemaOverlay       from './CinemaOverlay';
+import CinemaOverlay from './CinemaOverlay';
 
 export default function CinemaMap() {
-  const mapsReady        = useNaverMaps();
-  const { lat, lng }     = useGeo();
-  const [cinemas, setCinemas]   = useState([]);
-  const [selected, setSelected] = useState(null); // Keeping original state name 'selected'
+  const mapsReady = useNaverMaps();
+  const { lat, lng, error: geoError, isLoading: isGeoLoading, requestLocation } = useGeo();
+  const [cinemas, setCinemas] = useState([]);
+  const [selected, setSelected] = useState(null);
   const mapRef = useRef(null);
 
-  // Original useEffect for loading cinemas
   useEffect(() => {
-    if (mapsReady && lat != null && lng != null) { // Ensure lat and lng are not null before fetching
+    if (mapsReady && lat != null && lng != null) {
       listCinemasByDistance(lat, lng).then(setCinemas).catch(console.error);
     }
-  }, [mapsReady, lat, lng]); // Dependencies remain original
+  }, [mapsReady, lat, lng]);
 
-  // Original useEffect for map initialization and markers
   useEffect(() => {
-    if (!mapsReady || lat == null || lng == null || cinemas.length === 0) return; // Add cinemas.length check to prevent re-rendering map with no data
+    if (!mapsReady || lat == null || lng == null || cinemas.length === 0) return;
 
     const map = new window.naver.maps.Map(mapRef.current, {
       center: new window.naver.maps.LatLng(lat, lng),
       zoom: 12,
-      // minZoom: 8, // Added for better UX
-      // maxZoom: 18, // Added for better UX
-      // zoomControl: true, // Added zoom control
-      // zoomControlOptions: {
-      //   position: window.naver.maps.Position.TOP_RIGHT // Position zoom control
-      // }
     });
 
-    // Clear existing markers to prevent duplicates on re-render
     const markers = [];
     cinemas.forEach(c => {
       const m = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(c.latitude, c.longitude),
         map,
-        title: c.cinema_name, // Add title for hover tooltip
+        title: c.cinema_name,
       });
-      markers.push(m); // Store marker for cleanup
+      markers.push(m);
       window.naver.maps.Event.addListener(m, 'click', () => setSelected(c));
     });
 
-    // Cleanup function to remove markers when component unmounts or dependencies change
     return () => {
       markers.forEach(m => m.setMap(null));
     };
-  }, [mapsReady, lat, lng, cinemas]); // Dependencies remain original
+  }, [mapsReady, lat, lng, cinemas]);
 
-  // Original loading message
-  if (!mapsReady || lat == null || lng == null) {
+  // Handle loading and error states
+  if (isGeoLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-inter">
-        <p className="text-gray-600 text-lg">Loading map…</p>
+        <p className="text-gray-600 text-lg">Getting your location...</p>
+      </div>
+    );
+  }
+  
+  if (geoError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 font-inter text-center">
+        <p className="text-lg text-red-600 mb-2">Could not get your location</p>
+        <p className="text-gray-600 mb-4">{geoError}</p>
+        <button
+          onClick={requestLocation}
+          className="px-6 py-2 rounded-full text-lg font-medium transition-colors duration-200 bg-blue-600 text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  if (!mapsReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-inter">
+        <p className="text-gray-600 text-lg">Loading map...</p>
       </div>
     );
   }
@@ -68,23 +81,20 @@ export default function CinemaMap() {
         .font-inter {
           font-family: 'Inter', sans-serif;
         }
-        /* Hide scrollbar for cinema list but allow scrolling */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
         .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         `}
       </style>
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md border border-gray-200 p-4">
         <h1 className="text-3xl font-bold text-gray-800 mb-4 text-center">가까운 예술영화관</h1>
 
-        {/* Map */}
         <div ref={mapRef} className="w-full rounded-lg overflow-hidden border border-gray-300 mb-4" style={{ height: '60vh' }} />
 
-        {/* List under map, already sorted by distance_m from SQL */}
         <div className="max-h-[30vh] overflow-y-auto scrollbar-hide space-y-2 p-2">
           {cinemas.length === 0 ? (
             <p className="text-gray-600 text-center py-4">No cinemas found nearby.</p>
@@ -105,7 +115,6 @@ export default function CinemaMap() {
         </div>
       </div>
 
-      {/* Full-screen overlay */}
       {selected && (
         <CinemaOverlay cinema={selected} onClose={() => setSelected(null)} />
       )}
