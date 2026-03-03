@@ -10,14 +10,16 @@ export default function ScreeningCard({ screening }) {
     url,
   } = screening
 
-  // Format screen_name:
-  // 1. Trim any leading/trailing whitespace from the original string.
-  // 2. Split the string by the first occurrence of '[' or a space character.
-  // 3. Take the first element of the resulting array, which is the part before the delimiter.
   const formattedScreenName = screen_name.trim().split(/\[| /)[0];
 
   const timeRange = `${start_dt} – ${end_dt}`;
-  const seatsLabel = `${remain_seat_cnt} / ${total_seat_cnt}`;
+
+  const pct = total_seat_cnt > 0 ? remain_seat_cnt / total_seat_cnt : 0;
+  const badgeColor = pct >= 0.5
+    ? 'bg-green-100 text-green-700'
+    : pct >= 0.2
+    ? 'bg-yellow-100 text-yellow-700'
+    : 'bg-red-100 text-red-700';
 
   const handleClick = () => {
     if (url) {
@@ -41,7 +43,9 @@ export default function ScreeningCard({ screening }) {
     >
       <div className="font-medium text-xs text-gray-700">{formattedScreenName}</div>
       <div className="font-mono text-gray-700 text-base font-bold">{timeRange}</div>
-      <div className="text-xs text-gray-600">{seatsLabel}</div>
+      <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${badgeColor}`}>
+        {remain_seat_cnt}/{total_seat_cnt}
+      </span>
     </div>
   )
 }

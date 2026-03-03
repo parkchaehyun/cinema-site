@@ -163,13 +163,13 @@ export default function MovieScreeningsList() {
               <div className="relative">
                 <button
                   onClick={() => scrollMovieRail(-1)}
-                  className="hidden sm:flex absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white"
+                  className="hidden sm:flex absolute left-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white"
                   aria-label="Scroll movies left"
                 >
                   ‹
                 </button>
-                <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10" />
-                <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
+                <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10 hidden sm:block" />
+                <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10 hidden sm:block" />
                 <div
                   ref={movieRailRef}
                   onWheel={handleMovieRailWheel}
@@ -205,7 +205,7 @@ export default function MovieScreeningsList() {
                 </div>
                 <button
                   onClick={() => scrollMovieRail(1)}
-                  className="hidden sm:flex absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white"
+                  className="hidden sm:flex absolute right-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white"
                   aria-label="Scroll movies right"
                 >
                   ›
