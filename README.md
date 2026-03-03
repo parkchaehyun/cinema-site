@@ -5,7 +5,7 @@
 </p>
 
 
-A React-based web application that displays nearby art-film screening times across various independent and chain theaters in Korea. Users can select a movie and instantly view where and when it's playing on an interactive map, sorted by proximity to their current location.
+A React-based web application that displays nearby art-film screening times across independent theaters in Korea. Users can browse movies via a poster rail and instantly view where and when they're playing, sorted by proximity to their current location. A map view shows all cinemas with numbered pins and distance sorting.
 
 ## 🌐 Website Link
 
@@ -13,19 +13,19 @@ A React-based web application that displays nearby art-film screening times acro
 
 ## 📦 Tech Stack
 
-- **Frontend**: React, Leaflet.js, Supabase
+- **Frontend**: React, Supabase
 - **Backend**: Supabase PostgreSQL
-- **Crawler**: Python (Selenium + BeautifulSoup + Supabase Client)
+- **Crawler**: Python (Playwright + Supabase Client) — crawler + TMDB poster updater, both on AWS Lambda
 - **Deployment**: Vercel (frontend), AWS Lambda (crawler)
 
 ---
 
 ## 🧭 Features
 
-- 🎞️ Movie selection dropdown from Supabase  
-- 🗺️ Interactive Leaflet map showing cinema markers  
-- 📍 Distance-based sorting using geolocation  
-- 🧾 Screening info cards for each selected cinema  
+- 🎞️ Horizontally scrollable movie poster rail with full title display
+- 🗺️ Naver Maps view with numbered teardrop pins and split-panel cinema detail
+- 📍 Distance-based sorting using geolocation
+- 🧾 Screening info cards with color-coded seat availability badges
 - 📌 Non-blocking location fallback (GPS → IP-based → cached session → Seoul default)
 
 ---
@@ -56,15 +56,16 @@ public/
   └── index.html                 # HTML entry point
 
 src/
-  ├── App.js                     # Main compponent
+  ├── App.js                     # Main component
   ├── components/              
-  │   ├── CinemaMap.js           # Map with cinema markers
-  │   ├── CinemaOverlay.js       # Popup for cinema screenings
-  │   ├── MovieScreeningsList.js # List view of screening cards
-  │   ├── ScreeningCard.js       # Individual movie card
-  ├── hooks/                   
+  │   ├── CinemaMap.js           # Map view with split-panel cinema detail
+  │   ├── CinemaOverlay.js       # Cinema timetable (inline or modal)
+  │   ├── LocationStatusBar.js   # Location status and permission prompt
+  │   ├── MovieScreeningsList.js # Movie poster rail and screening cards
+  │   ├── ScreeningCard.js       # Individual screening card with seat badge
+  ├── hooks/
   │   ├── useGeo.js              # Shared geo provider/hook with fallback chain
-  │   └── useNaverMaps.js        # Hook to integrate Naver Map SDK
+  │   └── useNaverMaps.js        # Hook to integrate Naver Maps SDK
   ├── lib/
   │   └── supabase.js            # Supabase client configuration
   └── services/                  # API access layer to Supabase
@@ -93,7 +94,7 @@ Notes:
 
 ### Deploy `ip-location` Edge Function
 
-From `cinema-site` root:
+From `indiego-web` root:
 
 ```bash
 supabase login
@@ -117,6 +118,8 @@ supabase functions serve ip-location --no-verify-jwt
 
 ## License
 
-The MIT License (MIT)
+[PolyForm Noncommercial License 1.0.0](./LICENSE)
+
+Commercial use is not permitted. For commercial licensing, contact the repository owner.
 
 Copyright (c) 2026 Chaehyun Park
