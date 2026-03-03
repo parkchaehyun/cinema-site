@@ -124,7 +124,7 @@ export default function MovieScreeningsList() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 font-inter flex flex-col items-center">
+    <div className="min-h-screen bg-gray-100 py-4 sm:px-4 font-inter">
       <style>
         {`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -140,19 +140,19 @@ export default function MovieScreeningsList() {
         }
         `}
       </style>
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">예술영화관 시간표</h1>
         <LocationStatusBar />
 
         {/* Movie Selection Section */}
-        <div className="mb-8 p-4 bg-white rounded-lg shadow-md border border-gray-200">
+        <div className="mb-4 sm:mb-8 py-4 sm:px-4 bg-white sm:rounded-lg shadow-none sm:shadow-md border-y sm:border border-gray-200">
           {isLoadingMovies ? (
             <p className="text-gray-600">영화 불러오는 중...</p>
           ) : movies.length === 0 ? (
             <p className="text-gray-600">등록된 영화가 없습니다.</p>
           ) : (
             <>
-              <div className="mb-3 flex items-center justify-end px-1">
+              <div className="mb-3 flex items-center justify-end px-4 sm:px-1">
                 <button
                   onClick={() => setIsMovieModalOpen(true)}
                   className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-gray-800"
@@ -173,7 +173,7 @@ export default function MovieScreeningsList() {
                 <div
                   ref={movieRailRef}
                   onWheel={handleMovieRailWheel}
-                  className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide px-4 pt-2 scroll-smooth"
+                  className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide sm:px-4 pt-2 scroll-smooth"
                 >
                   {movies.map(movie => (
                     <button
@@ -277,14 +277,14 @@ export default function MovieScreeningsList() {
         )}
 
         {selectedMovie && (
-          <div className="mb-4 px-1">
+          <div className="mb-4 px-4 sm:px-1">
             <h2 className="text-xl font-bold text-gray-900 leading-tight">{selectedMovie.title}</h2>
           </div>
         )}
 
         {selectedMovieId ? (
           <>
-            <div className="date-tabs flex overflow-x-auto pb-2 space-x-2 mb-4 md:mb-6 scrollbar-hide">
+            <div className="date-tabs flex overflow-x-auto pb-2 space-x-2 mb-4 md:mb-6 scrollbar-hide px-4 sm:px-0">
               {isLoadingDates ? (
                 <p className="text-gray-600">날짜 불러오는 중...</p>
               ) : dates.length === 0 ? (
@@ -315,7 +315,7 @@ export default function MovieScreeningsList() {
                 {screeningsData.length === 0
                   ? <p className="text-gray-600 text-center py-8">{formatDateForDisplay(selectedDate)}에 상영이 없습니다.</p>
                   : screeningsData.map(c => (
-                      <div key={c.cinema_code} className="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200">
+                      <div key={c.cinema_code} className="bg-white sm:rounded-lg shadow-none sm:shadow-md p-4 sm:p-6 border-y sm:border border-gray-200">
                         <div className="flex justify-between items-baseline mb-3">
                           <h3 className="text-xl sm:text-2xl font-semibold text-gray-800">{c.cinema_name}</h3>
                           <p className="text-sm text-gray-600">
