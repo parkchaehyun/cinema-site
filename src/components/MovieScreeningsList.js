@@ -141,7 +141,6 @@ export default function MovieScreeningsList() {
         `}
       </style>
       <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">예술영화관 시간표</h1>
         <LocationStatusBar />
 
         {/* Movie Selection Section */}
@@ -173,7 +172,7 @@ export default function MovieScreeningsList() {
                 <div
                   ref={movieRailRef}
                   onWheel={handleMovieRailWheel}
-                  className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide sm:px-4 pt-2 scroll-smooth"
+                  className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide px-2 sm:px-4 pt-2 scroll-smooth"
                 >
                   {movies.map(movie => (
                     <button

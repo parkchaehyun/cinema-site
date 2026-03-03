@@ -28,7 +28,7 @@ function App() {
               }`}
             onClick={() => setView('movie')}
           >
-            🎬 Movies
+            🎬 영화
           </button>
           <button
             className={`px-6 py-2 rounded-full text-lg font-medium transition-colors duration-200
@@ -38,7 +38,7 @@ function App() {
               }`}
             onClick={() => setView('map')}
           >
-            🗺️ Map
+            📍 극장
           </button>
         </nav>
 

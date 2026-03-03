@@ -124,7 +124,6 @@ export default function CinemaMap() {
       </style>
 
       <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">가까운 예술영화관</h1>
         <LocationStatusBar />
       </div>
 
