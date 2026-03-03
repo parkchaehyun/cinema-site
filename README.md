@@ -1,7 +1,7 @@
 # 🎬 IndieGo
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7fe94c7c-91fa-42fc-881e-2004ab18d3b4" alt="App Screenshot" width="1000" />
+  <img src="https://github.com/user-attachments/assets/668c5ba7-e95b-49d5-a166-b5809e948e30" alt="App Screenshot" width="1000" />
 </p>
 
 
