@@ -1,4 +1,4 @@
-﻿import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
 
 export async function listMovieDates(movieId) {
   const { data, error } = await supabase

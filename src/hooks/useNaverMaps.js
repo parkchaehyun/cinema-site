@@ -1,4 +1,4 @@
-﻿// src/hooks/useNaverMaps.js
+// src/hooks/useNaverMaps.js
 import { useState, useEffect } from 'react';
 
 export function useNaverMaps() {

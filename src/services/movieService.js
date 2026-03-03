@@ -1,4 +1,4 @@
-﻿// src/services/movieService.js
+// src/services/movieService.js
 import { supabase } from '../lib/supabase';
 
 export async function listUpcomingMovies() {

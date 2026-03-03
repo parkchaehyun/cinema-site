@@ -1,4 +1,4 @@
-﻿// src/services/cinemaService.js
+// src/services/cinemaService.js
 import { supabase } from '../lib/supabase';
 
 export async function listCinemasByDistance(lat, lng) {

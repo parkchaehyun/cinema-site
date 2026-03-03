@@ -1,0 +1,2 @@
+[functions.ip-location]
+verify_jwt = false
