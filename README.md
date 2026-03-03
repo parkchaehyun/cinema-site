@@ -1,7 +1,7 @@
-# 🎬 Art Film Screening Map
+# 🎬 IndieGo
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2d83c101-2429-4e3e-a58c-2ab07ef9c59a" alt="App Screenshot" width="808" />
+  <img src="https://github.com/user-attachments/assets/7fe94c7c-91fa-42fc-881e-2004ab18d3b4" alt="App Screenshot" width="1000" />
 </p>
 
 
@@ -9,7 +9,7 @@ A React-based web application that displays nearby art-film screening times acro
 
 ## 🌐 Website Link
 
-[https://cinema.cpark.dev](https://cinema.cpark.dev)
+[https://indiego.ing](https://indiego.ing)
 
 ## 📦 Tech Stack
 
@@ -45,7 +45,7 @@ A React-based web application that displays nearby art-film screening times acro
 ```
 
 🧩 Crawler source code:  
-**Cinema Crawler Repository** [https://github.com/parkchaehyun/cinema-crawler](https://github.com/parkchaehyun/cinema-crawler)
+**Cinema Crawler Repository** [https://github.com/parkchaehyun/indiego-crawler](https://github.com/parkchaehyun/indiego-crawler)
 
 ---
 
@@ -119,4 +119,4 @@ supabase functions serve ip-location --no-verify-jwt
 
 The MIT License (MIT)
 
-Copyright (c) 2025 Chaehyun Park
+Copyright (c) 2026 Chaehyun Park
