@@ -21,7 +21,16 @@ export default function MovieScreeningsList() {
   const [isLoadingScreenings, setIsLoadingScreenings] = useState(false);
   const [isMovieModalOpen, setIsMovieModalOpen] = useState(false);
   const [movieSearch, setMovieSearch] = useState('');
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const movieRailRef = useRef(null);
+
+  const updateScrollButtons = () => {
+    const rail = movieRailRef.current;
+    if (!rail) return;
+    setCanScrollLeft(rail.scrollLeft > 0);
+    setCanScrollRight(rail.scrollLeft < rail.scrollWidth - rail.clientWidth - 1);
+  };
 
   useEffect(() => {
     setIsLoadingMovies(true);
@@ -75,6 +84,14 @@ export default function MovieScreeningsList() {
         setIsLoadingScreenings(false);
     }
   }, [selectedMovieId, selectedDate, lat, lng]);
+
+  useEffect(() => {
+    const rail = movieRailRef.current;
+    if (!rail) return;
+    updateScrollButtons();
+    rail.addEventListener('scroll', updateScrollButtons);
+    return () => rail.removeEventListener('scroll', updateScrollButtons);
+  }, [movies]);
 
   useEffect(() => {
     if (!isMovieModalOpen) return;
@@ -154,7 +171,7 @@ export default function MovieScreeningsList() {
               <div className="mb-3 flex items-center justify-end px-4 sm:px-1">
                 <button
                   onClick={() => setIsMovieModalOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-gray-800"
+                  className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-indigo-700"
                 >
                   전체 보기
                 </button>
@@ -162,13 +179,11 @@ export default function MovieScreeningsList() {
               <div className="relative">
                 <button
                   onClick={() => scrollMovieRail(-1)}
-                  className="hidden sm:flex absolute left-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white"
+                  className={`${canScrollLeft ? 'hidden sm:flex' : 'hidden'} absolute left-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white`}
                   aria-label="Scroll movies left"
                 >
                   ‹
                 </button>
-                <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10 hidden sm:block" />
-                <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10 hidden sm:block" />
                 <div
                   ref={movieRailRef}
                   onWheel={handleMovieRailWheel}
@@ -183,7 +198,7 @@ export default function MovieScreeningsList() {
                       <div
                         className={`w-32 h-auto rounded-lg shadow-md
                           ${selectedMovieId === movie.id
-                            ? 'ring-4 ring-blue-500 ring-offset-2'
+                            ? 'ring-4 ring-indigo-500 ring-offset-2'
                             : 'hover:shadow-lg'
                           }`}
                       >
@@ -204,7 +219,7 @@ export default function MovieScreeningsList() {
                 </div>
                 <button
                   onClick={() => scrollMovieRail(1)}
-                  className="hidden sm:flex absolute right-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white"
+                  className={`${canScrollRight ? 'hidden sm:flex' : 'hidden'} absolute right-0 top-1/2 z-20 -translate-y-1/2 rounded-full border border-gray-300 bg-white/90 px-3 py-2 text-gray-700 shadow-sm hover:bg-white`}
                   aria-label="Scroll movies right"
                 >
                   ›
@@ -241,7 +256,7 @@ export default function MovieScreeningsList() {
                   value={movieSearch}
                   onChange={(event) => setMovieSearch(event.target.value)}
                   placeholder="영화 제목 검색"
-                  className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none"
                 />
                 <div className="mt-3 max-h-[55vh] space-y-2 overflow-y-auto pr-1">
                   {filteredMovies.length === 0 ? (
@@ -253,7 +268,7 @@ export default function MovieScreeningsList() {
                         onClick={() => handleMovieSelect(movie.id)}
                         className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-all
                           ${selectedMovieId === movie.id
-                            ? 'border-blue-500 bg-blue-50 shadow-sm'
+                            ? 'border-indigo-500 bg-indigo-50 shadow-sm'
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                           }`}
                       >
@@ -294,7 +309,7 @@ export default function MovieScreeningsList() {
                     key={d}
                     className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-colors duration-200
                       ${d === selectedDate
-                        ? 'bg-blue-600 text-white shadow-lg'
+                        ? 'bg-indigo-600 text-white shadow-lg'
                         : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
                       }`}
                     onClick={() => setSelectedDate(d)}
@@ -307,7 +322,7 @@ export default function MovieScreeningsList() {
             
             {isLoadingScreenings ? (
               <div className="flex justify-center items-center h-48">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
               </div>
             ) : (
               <div className="cinema-list space-y-4">

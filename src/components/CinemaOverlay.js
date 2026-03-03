@@ -73,8 +73,8 @@ export default function CinemaOverlay({ cinema, onClose, inline = false }) {
               key={d}
               className={`flex items-center justify-center flex-shrink-0 px-6 py-4 rounded-full text-sm font-medium transition-colors duration-200 whitespace-nowrap
                 ${d === date
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700'
                 }`}
               onClick={() => setDate(d)}
             >

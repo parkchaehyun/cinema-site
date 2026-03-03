@@ -51,7 +51,7 @@ export default function CinemaMap() {
     const map = new window.naver.maps.Map(mapRef.current, {
       center: new window.naver.maps.LatLng(SEOUL_CENTER.lat, SEOUL_CENTER.lng),
       zoom: 12,
-      mapTypeId: window.naver.maps.MapTypeId.TERRAIN,
+      mapTypeId: window.naver.maps.MapTypeId.NORMAL,
     });
     mapInstanceRef.current = map;
 
@@ -61,7 +61,7 @@ export default function CinemaMap() {
         position: new window.naver.maps.LatLng(c.latitude, c.longitude),
         map,
         title: c.cinema_name,
-        icon: makePinIcon('#2563EB', i + 1, false),
+        icon: makePinIcon('#6366F1', i + 1, false),
       });
       entries.push({ cinema: c, marker: m, index: i });
       window.naver.maps.Event.addListener(m, 'click', () => setSelected(c));
@@ -95,7 +95,7 @@ export default function CinemaMap() {
   useEffect(() => {
     markersRef.current.forEach(({ cinema, marker, index }) => {
       const isSelected = selected && selected.cinema_code === cinema.cinema_code;
-      marker.setIcon(makePinIcon(isSelected ? '#DC2626' : '#2563EB', index + 1, isSelected));
+      marker.setIcon(makePinIcon(isSelected ? '#DC2626' : '#6366F1', index + 1, isSelected));
     });
   }, [selected]);
 
@@ -142,7 +142,7 @@ export default function CinemaMap() {
                   className="w-full flex justify-between items-center bg-gray-50 hover:bg-gray-100 rounded-md p-3 transition-colors duration-200 border border-gray-200 shadow-sm"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                       {i + 1}
                     </span>
                     <strong className="text-lg font-semibold text-gray-800">{c.cinema_name}</strong>
@@ -159,7 +159,7 @@ export default function CinemaMap() {
             <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
               <button
                 onClick={() => setSelected(null)}
-                className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
               >
                 ← 목록
               </button>
