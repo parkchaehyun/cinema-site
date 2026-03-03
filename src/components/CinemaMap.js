@@ -3,10 +3,12 @@ import { useGeo } from '../hooks/useGeo';
 import { useNaverMaps } from '../hooks/useNaverMaps';
 import { listCinemasByDistance } from '../services/cinemaService'
 import CinemaOverlay from './CinemaOverlay';
+import LocationStatusBar from './LocationStatusBar';
 
 export default function CinemaMap() {
   const mapsReady = useNaverMaps();
-  const { lat, lng, error: geoError, isLoading: isGeoLoading, requestLocation } = useGeo();
+  const { lat, lng, source } = useGeo();
+  const showDistance = source !== 'default';
   const [cinemas, setCinemas] = useState([]);
   const [selected, setSelected] = useState(null);
   const mapRef = useRef(null);
@@ -41,30 +43,6 @@ export default function CinemaMap() {
     };
   }, [mapsReady, lat, lng, cinemas]);
 
-  // Handle loading and error states
-  if (isGeoLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-inter">
-        <p className="text-gray-600 text-lg">Getting your location...</p>
-      </div>
-    );
-  }
-  
-  if (geoError) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 font-inter text-center">
-        <p className="text-lg text-red-600 mb-2">Could not get your location</p>
-        <p className="text-gray-600 mb-4">{geoError}</p>
-        <button
-          onClick={requestLocation}
-          className="px-6 py-2 rounded-full text-lg font-medium transition-colors duration-200 bg-blue-600 text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
   if (!mapsReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-inter">
@@ -92,6 +70,7 @@ export default function CinemaMap() {
       </style>
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md border border-gray-200 p-4">
         <h1 className="text-3xl font-bold text-gray-800 mb-4 text-center">가까운 예술영화관</h1>
+        <LocationStatusBar />
 
         <div ref={mapRef} className="w-full rounded-lg overflow-hidden border border-gray-300 mb-4" style={{ height: '60vh' }} />
 
@@ -107,7 +86,7 @@ export default function CinemaMap() {
               >
                 <strong className="text-lg font-semibold text-gray-800">{c.cinema_name}</strong>
                 <span className="text-md text-gray-600">
-                  {(c.distance_m / 1000).toFixed(1)} km
+                  {showDistance && c.distance_m ? `${(c.distance_m / 1000).toFixed(1)} km` : ''}
                 </span>
               </button>
             ))

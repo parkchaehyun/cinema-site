@@ -6,9 +6,11 @@ import {
 } from '../services/screeningService';
 import { listUpcomingMovies } from '../services/movieService';
 import ScreeningCard from './ScreeningCard';
+import LocationStatusBar from './LocationStatusBar';
 
 export default function MovieScreeningsList() {
-  const { lat, lng, error: geoError, isLoading: isGeoLoading, requestLocation } = useGeo();
+  const { lat, lng, source } = useGeo();
+  const showDistance = source !== 'default';
   const [movies, setMovies] = useState([]);
   const [selectedMovieId, setSelectedMovieId] = useState(null);
   const [dates, setDates] = useState([]);
@@ -54,7 +56,7 @@ export default function MovieScreeningsList() {
   }, [selectedMovieId]);
 
   useEffect(() => {
-    if (selectedMovieId && selectedDate && lat && lng) {
+    if (selectedMovieId && selectedDate && lat != null && lng != null) {
       setIsLoadingScreenings(true);
       getNearbyScreenings(selectedMovieId, lat, lng, selectedDate)
         .then(data => {
@@ -65,7 +67,7 @@ export default function MovieScreeningsList() {
           console.error("Error loading screenings:", err);
           setIsLoadingScreenings(false);
         });
-    } else if (!selectedDate || !lat || !lng) {
+    } else if (!selectedDate || lat == null || lng == null) {
         setScreeningsData([]);
         setIsLoadingScreenings(false);
     }
@@ -76,32 +78,6 @@ export default function MovieScreeningsList() {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', weekday: 'short' });
   };
-
-  if (isGeoLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-inter">
-        <p className="text-gray-600 text-lg">Getting your location...</p>
-      </div>
-    );
-  }
-
-  if (geoError) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 font-inter text-center">
-        <p className="text-lg text-red-600 mb-2">Could not get your location</p>
-        <p className="text-gray-600 mb-4">{geoError}</p>
-        <button
-          onClick={requestLocation}
-          className="px-6 py-2 rounded-full text-lg font-medium transition-colors duration-200 bg-blue-600 text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          Try Again
-        </button>
-        <p className="text-gray-500 text-sm mt-4 max-w-md">
-          To see nearby cinemas, please allow location access in your browser. You may need to update your site settings.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 font-inter flex flex-col items-center">
@@ -122,6 +98,7 @@ export default function MovieScreeningsList() {
       </style>
       <div className="w-full max-w-4xl">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">예술영화관 시간표</h1>
+        <LocationStatusBar />
 
         {/* Movie Selection Section */}
         <div className="mb-8 p-4 bg-white rounded-lg shadow-md border border-gray-200">
@@ -198,7 +175,9 @@ export default function MovieScreeningsList() {
                       <div key={c.cinema_code} className="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200">
                         <div className="flex justify-between items-baseline mb-3">
                           <h3 className="text-xl sm:text-2xl font-semibold text-gray-800">{c.cinema_name}</h3>
-                          <p className="text-sm text-gray-600">{c.distance_m ? `${(c.distance_m / 1000).toFixed(1)} km` : ''}</p>
+                          <p className="text-sm text-gray-600">
+                            {showDistance && c.distance_m ? `${(c.distance_m / 1000).toFixed(1)} km` : ''}
+                          </p>
                         </div>
                         <div
                           className="showtimes flex flex-wrap gap-2"
