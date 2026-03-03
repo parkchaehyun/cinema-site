@@ -56,6 +56,12 @@ function App() {
         )}
 
         {view === 'map' && <CinemaMap />}
+
+        <footer className="py-6 text-center">
+          <p className="text-sm text-gray-400">
+            피드백 · 오류 및 누락 제보 · 문의 · <a href="mailto:indiego@chaepark.com" className="hover:text-gray-600 transition-colors">indiego@chaepark.com</a>
+          </p>
+        </footer>
       </div>
     </GeoProvider>
     <Analytics />
