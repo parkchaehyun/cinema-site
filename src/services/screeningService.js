@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { getCachedJson, roundCoord, setCachedJson } from './cache';
 
 export async function listMovieDates(movieId) {
   const { data, error } = await supabase
@@ -16,6 +17,12 @@ export async function listMovieDates(movieId) {
 
 // 2) Get nearby screenings for a movie
 export async function getNearbyScreenings(movieId, lat, lng, date) {
+  const roundedLat = roundCoord(lat);
+  const roundedLng = roundCoord(lng);
+  const cacheKey = `nearby:${movieId}:${date}:${roundedLat}:${roundedLng}`;
+  const cached = getCachedJson(cacheKey);
+  if (cached) return cached;
+
   const { data, error } = await supabase
     .rpc('get_nearby_screenings', {
       in_movie_id:   movieId,
@@ -24,6 +31,7 @@ export async function getNearbyScreenings(movieId, lat, lng, date) {
       in_target_date: date,           // pass YYYY-MM-DD
     });
   if (error) throw error;
+  setCachedJson(cacheKey, data);
   return data;
 }
 
@@ -91,4 +99,3 @@ export async function getCinemaScreenings(cinemaCode) {
   if (error) throw error;
   return data;
 }
-
