@@ -33,7 +33,7 @@ export default function ScreeningCard({ screening }) {
     <div
       className={`
         border border-gray-300 rounded-lg p-2.5 mb-2 grid items-center gap-4
-        grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_auto_auto] md:grid-cols-[1fr_auto_auto]
+        ${total_seat_cnt > 0 ? 'grid-cols-[1fr_auto_auto]' : 'grid-cols-[1fr_auto]'}
         ${isClickable
           ? 'cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200 shadow-sm'
           : 'opacity-60 cursor-not-allowed'
@@ -43,9 +43,11 @@ export default function ScreeningCard({ screening }) {
     >
       <div className="font-medium text-xs text-gray-700">{formattedScreenName}</div>
       <div className="font-mono text-gray-700 text-base font-bold">{timeRange}</div>
-      <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${badgeColor}`}>
-        {remain_seat_cnt}/{total_seat_cnt}
-      </span>
+      {total_seat_cnt > 0 && (
+        <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${badgeColor}`}>
+          {remain_seat_cnt}/{total_seat_cnt}
+        </span>
+      )}
     </div>
   )
 }
