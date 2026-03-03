@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import MovieScreeningsList from './components/MovieScreeningsList';
 import CinemaMap from './components/CinemaMap'; // Original import
 import { GeoProvider } from './hooks/useGeo';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   const [view, setView] = useState('movie');
 
   return (
+    <>
     <GeoProvider>
       <div className="font-inter">
         <style>
@@ -51,6 +53,8 @@ function App() {
         {view === 'map' && <CinemaMap />}
       </div>
     </GeoProvider>
+    <Analytics />
+    </>
   );
 }
 
