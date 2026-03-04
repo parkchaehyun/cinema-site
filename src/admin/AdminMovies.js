@@ -34,6 +34,7 @@ export default function AdminMovies({ session }) {
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState('');
   const [filterNoTmdb, setFilterNoTmdb] = useState(false);
+  const [filterUpcoming, setFilterUpcoming] = useState(true);
   const [selected, setSelected] = useState(null);
   const [screenings, setScreenings] = useState([]);
   const [tmdbQuery, setTmdbQuery] = useState('');
@@ -42,15 +43,28 @@ export default function AdminMovies({ session }) {
   const [actionLoading, setActionLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
 
-  const fetchMovies = useCallback(async () => {
-    const { data, error } = await supabase
+  const fetchMovies = useCallback(async (upcomingOnly) => {
+    let ids = null;
+    if (upcomingOnly) {
+      const { data } = await supabase.from('upcoming_screenings').select('movie_id');
+      ids = [...new Set((data ?? []).map((r) => r.movie_id))];
+      if (ids.length === 0) {
+        setMovies([]);
+        return;
+      }
+    }
+
+    let query = supabase
       .from('movies')
       .select('id, title, canonical_title, tmdb_id, poster_url, tmdb_locked, tmdb_match_source')
       .order('title');
+    if (ids) query = query.in('id', ids);
+
+    const { data, error } = await query;
     if (!error) setMovies(data ?? []);
   }, []);
 
-  useEffect(() => { fetchMovies(); }, [fetchMovies]);
+  useEffect(() => { fetchMovies(filterUpcoming); }, [fetchMovies, filterUpcoming]);
 
   useEffect(() => {
     let list = movies;
@@ -107,7 +121,7 @@ export default function AdminMovies({ session }) {
     setActionLoading(false);
     if (result.ok) {
       setStatusMsg('적용 완료');
-      await fetchMovies();
+      await fetchMovies(filterUpcoming);
       // Refresh selected movie state
       setSelected((prev) => prev ? {
         ...prev,
@@ -132,7 +146,7 @@ export default function AdminMovies({ session }) {
     if (result.ok) {
       const msgs = { clear: '초기화 완료', lock: '잠금 완료', unlock: '잠금 해제 완료' };
       setStatusMsg(msgs[action] ?? '완료');
-      await fetchMovies();
+      await fetchMovies(filterUpcoming);
       setSelected((prev) => {
         if (!prev) return prev;
         if (action === 'clear') return { ...prev, tmdb_id: null, poster_url: null, tmdb_match_source: 'auto', tmdb_locked: false };
@@ -162,7 +176,11 @@ export default function AdminMovies({ session }) {
             onChange={(e) => setSearch(e.target.value)}
             style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 13, boxSizing: 'border-box', marginBottom: 8 }}
           />
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <label style={{ fontSize: 12, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+              <input type="checkbox" checked={filterUpcoming} onChange={(e) => setFilterUpcoming(e.target.checked)} />
+              예정 상영만
+            </label>
             <label style={{ fontSize: 12, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
               <input type="checkbox" checked={filterNoTmdb} onChange={(e) => setFilterNoTmdb(e.target.checked)} />
               TMDB 없음
