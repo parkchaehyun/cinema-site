@@ -7,6 +7,7 @@ import AdminApp from './admin/AdminApp';
 
 function App() {
   const [view, setView] = useState('movie');
+  const [movieKey, setMovieKey] = useState(0);
   const isAdmin = window.location.pathname.startsWith('/admin');
   if (isAdmin) return <AdminApp />;
 
@@ -23,9 +24,12 @@ function App() {
           `}
         </style>
         <nav className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-          <span className="text-lg sm:text-xl font-bold tracking-tight select-none">
+          <button
+            className="text-lg sm:text-xl font-bold tracking-tight cursor-pointer"
+            onClick={() => { setView('movie'); setMovieKey(k => k + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          >
             <span className="text-gray-900">Indie</span><span className="text-indigo-500">Go</span>
-          </span>
+          </button>
           <div className="flex gap-2">
             <button
               className={`px-3 sm:px-5 py-1.5 rounded-full text-sm sm:text-base font-medium transition-colors duration-200
@@ -54,7 +58,7 @@ function App() {
           <>
             {/* MovieSelector is removed. MovieScreeningsList now handles movie selection internally. */}
             {/* No movieId prop is passed as it's managed within MovieScreeningsList */}
-            <MovieScreeningsList />
+            <MovieScreeningsList key={movieKey} />
           </>
         )}
 
