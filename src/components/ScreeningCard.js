@@ -10,7 +10,11 @@ export default function ScreeningCard({ screening }) {
     url,
   } = screening
 
-  const formattedScreenName = screen_name.trim().split(/\[| /)[0];
+  const formattedScreenName = (screen_name || '')
+    .trim()
+    .replace(/\s*\[[^\]]*\]\s*$/, '')
+    .replace(/\s*\([^)]*\)\s*$/, '')
+    .trim();
 
   const timeRange = `${start_dt} – ${end_dt}`;
 
