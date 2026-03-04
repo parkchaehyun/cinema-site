@@ -37,6 +37,7 @@ export default function AdminMovies({ session }) {
   const [filterUpcoming, setFilterUpcoming] = useState(true);
   const [selected, setSelected] = useState(null);
   const [screenings, setScreenings] = useState([]);
+  const [screeningsMode, setScreeningsMode] = useState('upcoming');
   const [tmdbQuery, setTmdbQuery] = useState('');
   const [tmdbResults, setTmdbResults] = useState([]);
   const [tmdbLoading, setTmdbLoading] = useState(false);
@@ -85,13 +86,39 @@ export default function AdminMovies({ session }) {
     setTmdbResults([]);
     setStatusMsg('');
 
-    const { data } = await supabase
+    const { data: upcomingData } = await supabase
       .from('upcoming_screenings')
-      .select('play_date, start_dt, cinema_name')
+      .select('play_date, start_dt, cinema_name, url')
       .eq('movie_id', movie.id)
       .order('play_date')
       .limit(15);
-    setScreenings(data ?? []);
+
+    if ((upcomingData ?? []).length > 0) {
+      setScreeningsMode('upcoming');
+      setScreenings(
+        (upcomingData ?? []).map((row) => ({
+          ...row,
+          isArchive: false,
+        }))
+      );
+      return;
+    }
+
+    const { data: recentData } = await supabase
+      .from('screenings')
+      .select('play_date, start_dt, cinema_name')
+      .eq('movie_id', movie.id)
+      .order('play_date', { ascending: false })
+      .order('start_dt', { ascending: false })
+      .limit(5);
+
+    setScreeningsMode('archive');
+    setScreenings(
+      (recentData ?? []).map((row) => ({
+        ...row,
+        isArchive: true,
+      }))
+    );
   }, []);
 
   const handleTmdbSearch = async () => {
@@ -269,10 +296,26 @@ export default function AdminMovies({ session }) {
             {/* Upcoming screenings */}
             {screenings.length > 0 && (
               <div style={{ background: '#fff', borderRadius: 10, padding: 16, marginBottom: 16, border: '1px solid #e5e7eb' }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>예정 상영</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>
+                  {screeningsMode === 'archive' ? '최근 상영 5건' : '예정 상영'}
+                </div>
                 <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.8 }}>
                   {screenings.map((s, i) => (
-                    <div key={i}>{s.play_date} — {s.cinema_name} {s.start_dt ? `(${s.start_dt})` : ''}</div>
+                    s.url && !s.isArchive ? (
+                      <a
+                        key={i}
+                        href={s.url}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        style={{ display: 'block', color: '#4f46e5', textDecoration: 'none' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                      >
+                        {s.play_date} — {s.cinema_name} {s.start_dt ? `(${s.start_dt})` : ''}
+                      </a>
+                    ) : (
+                      <div key={i}>{s.play_date} — {s.cinema_name} {s.start_dt ? `(${s.start_dt})` : ''}</div>
+                    )
                   ))}
                 </div>
               </div>
