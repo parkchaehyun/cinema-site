@@ -15,9 +15,7 @@ export default function CinemaOverlay({ cinema, onClose, inline = false }) {
     listCinemaDates(cinema.cinema_code)
       .then(dts => {
         setDates(dts);
-        if (dts.length > 0) {
-          setDate(dts[0]);
-        }
+        if (dts.length > 0) setDate(dts[0]);
       })
       .catch(console.error);
   }, [cinema.cinema_code]);
@@ -29,9 +27,25 @@ export default function CinemaOverlay({ cinema, onClose, inline = false }) {
       return;
     }
     getCinemaTimetable(cinema.cinema_code, date)
-      .then(setScreenings)
+      .then(data => {
+        const todayISO = new Date().toISOString().slice(0, 10);
+        if (date === todayISO) {
+          const now = new Date();
+          const currentHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          data = data.filter(s => s.start_dt > currentHHMM);
+          if (data.length === 0) {
+            const nextDate = dates.find(d => d > date);
+            if (nextDate) {
+              setDates(prev => prev.filter(d => d !== date));
+              setDate(nextDate);
+              return;
+            }
+          }
+        }
+        setScreenings(data);
+      })
       .catch(console.error);
-  }, [cinema.cinema_code, date]);
+  }, [cinema.cinema_code, date, dates]);
 
   // Group today's screenings by movie title
   const byMovie = screenings.reduce((acc, s) => {
@@ -86,7 +100,7 @@ export default function CinemaOverlay({ cinema, onClose, inline = false }) {
 
       <div className={`overflow-y-auto scrollbar-hide ${inline ? 'flex-1 p-4' : 'flex-grow pr-2 -mr-2'}`}>
         {screenings.length === 0 ? (
-          <p className="text-gray-600 text-center py-8">{formatDateForDisplay(date)}에 상영이 없습니다.</p>
+          <p className="text-gray-600 text-center py-8">{formatDateForDisplay(date) === '오늘' ? '오늘은 상영이 없습니다.' : `${formatDateForDisplay(date)}에 상영이 없습니다.`}</p>
         ) : (
           Object.entries(byMovie).map(([title, shows]) => (
             <section key={title} className="bg-gray-50 rounded-lg p-4 mb-4 shadow-sm border border-gray-100">

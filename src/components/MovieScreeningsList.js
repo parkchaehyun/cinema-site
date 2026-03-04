@@ -25,6 +25,7 @@ export default function MovieScreeningsList() {
   const [canScrollRight, setCanScrollRight] = useState(false);
   const movieRailRef = useRef(null);
   const movieCardRefs = useRef({});
+  const datesRef = useRef(dates);
 
   const updateScrollButtons = () => {
     const rail = movieRailRef.current;
@@ -58,6 +59,7 @@ export default function MovieScreeningsList() {
     setIsLoadingDates(true);
     listMovieDates(selectedMovieId)
       .then(dts => {
+        datesRef.current = dts;
         setDates(dts);
         setSelectedDate(dts[0] ?? null);
         setIsLoadingDates(false);
@@ -73,6 +75,23 @@ export default function MovieScreeningsList() {
       setIsLoadingScreenings(true);
       getNearbyScreenings(selectedMovieId, lat, lng, selectedDate)
         .then(data => {
+          const todayISO = new Date().toISOString().slice(0, 10);
+          if (selectedDate === todayISO) {
+            const now = new Date();
+            const currentHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            data = data
+              .map(cinema => ({ ...cinema, screenings: cinema.screenings.filter(s => s.start_dt > currentHHMM) }))
+              .filter(cinema => cinema.screenings.length > 0);
+          }
+          if (data.length === 0 && selectedDate === new Date().toISOString().slice(0, 10)) {
+            const nextDate = datesRef.current.find(d => d > selectedDate);
+            if (nextDate) {
+              datesRef.current = datesRef.current.filter(d => d !== selectedDate);
+              setDates(prev => prev.filter(d => d !== selectedDate));
+              setSelectedDate(nextDate);
+              return;
+            }
+          }
           setScreeningsData(data);
           setIsLoadingScreenings(false);
         })
@@ -332,7 +351,7 @@ export default function MovieScreeningsList() {
             ) : (
               <div className="cinema-list space-y-4">
                 {screeningsData.length === 0
-                  ? <p className="text-gray-600 text-center py-8">{formatDateForDisplay(selectedDate)}에 상영이 없습니다.</p>
+                  ? <p className="text-gray-600 text-center py-8">{formatDateForDisplay(selectedDate) === '오늘' ? '오늘은 상영이 없습니다.' : `${formatDateForDisplay(selectedDate)}에 상영이 없습니다.`}</p>
                   : screeningsData.map(c => (
                       <div key={c.cinema_code} className="bg-white sm:rounded-lg shadow-none sm:shadow-md p-4 sm:p-6 border-y sm:border border-gray-200">
                         <div className="flex justify-between items-baseline mb-3">
