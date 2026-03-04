@@ -365,7 +365,7 @@ export default function MovieScreeningsList() {
                         >
                           {c.screenings.map(s => (
                             <ScreeningCard
-                              key={`${c.cinema_code}-${s.start_dt}`}
+                              key={`${c.cinema_code}-${s.screen_name}-${s.start_dt}`}
                               screening={s}
                             />
                           ))}
