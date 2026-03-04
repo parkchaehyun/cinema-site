@@ -13,7 +13,7 @@ export default function AdminLogin() {
     // Unauthorized emails fail silently at Supabase level (signups disabled)
     await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: 'https://indiego.ing/admin' },
+      options: { emailRedirectTo: `${window.location.origin}/admin` },
     });
     setLoading(false);
     setSubmitted(true);

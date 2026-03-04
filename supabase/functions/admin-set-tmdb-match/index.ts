@@ -60,6 +60,10 @@ serve(async (req) => {
     return jsonResponse({ error: 'movie_id and action are required' }, 400);
   }
 
+  if (action === 'set' && !tmdb_id) {
+    return jsonResponse({ error: 'tmdb_id is required for action=set' }, 400);
+  }
+
   // Fetch current movie state for audit log
   const { data: currentMovie } = await supabaseAdmin
     .from('movies')

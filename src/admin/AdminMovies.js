@@ -14,15 +14,19 @@ function statusChip(movie) {
   return { label: '자동', bg: '#dbeafe', color: '#1e40af' };
 }
 
-function callEdgeFunction(name, body, token) {
-  return fetch(`${SUPABASE_FUNCTIONS_URL}/${name}`, {
+async function callEdgeFunction(name, body, token) {
+  const r = await fetch(`${SUPABASE_FUNCTIONS_URL}/${name}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(body),
-  }).then((r) => r.json());
+  });
+  if (!r.ok && r.headers.get('content-type')?.includes('application/json') === false) {
+    return { error: `HTTP ${r.status}: ${await r.text()}` };
+  }
+  return r.json();
 }
 
 export default function AdminMovies({ session }) {
@@ -250,7 +254,7 @@ export default function AdminMovies({ session }) {
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>예정 상영</div>
                 <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.8 }}>
                   {screenings.map((s, i) => (
-                    <div key={i}>{s.play_date} — {s.cinema_name} {s.start_dt ? `(${s.start_dt.slice(11, 16)})` : ''}</div>
+                    <div key={i}>{s.play_date} — {s.cinema_name} {s.start_dt ? `(${s.start_dt})` : ''}</div>
                   ))}
                 </div>
               </div>
