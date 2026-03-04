@@ -55,6 +55,10 @@ function writeCachedCoords(coords) {
   );
 }
 
+function isInKorea(lat, lng) {
+  return lat >= 33.0 && lat <= 43.0 && lng >= 124.0 && lng <= 132.0;
+}
+
 function mapGeoErrorMessage(err) {
   if (!err) return 'Could not access your location.';
   if (err.code === err.PERMISSION_DENIED) {
@@ -138,6 +142,9 @@ export function GeoProvider({ children }) {
           lng: geo.coords.longitude,
           source: 'gps',
         };
+        if (!isInKorea(next.lat, next.lng)) {
+          throw new Error('GPS location is outside Korea');
+        }
         applyPosition(next);
         setError(null);
         const permission = await getPermissionState();
@@ -154,6 +161,9 @@ export function GeoProvider({ children }) {
 
         try {
           const ipCoords = await getIpBasedLocation();
+          if (!isInKorea(ipCoords.lat, ipCoords.lng)) {
+            throw new Error('IP location is outside Korea');
+          }
           applyPosition({
             lat: ipCoords.lat,
             lng: ipCoords.lng,
