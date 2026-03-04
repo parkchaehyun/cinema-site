@@ -3,9 +3,12 @@ import MovieScreeningsList from './components/MovieScreeningsList';
 import CinemaMap from './components/CinemaMap'; // Original import
 import { GeoProvider } from './hooks/useGeo';
 import { Analytics } from '@vercel/analytics/react';
+import AdminApp from './admin/AdminApp';
 
 function App() {
   const [view, setView] = useState('movie');
+  const isAdmin = window.location.pathname.startsWith('/admin');
+  if (isAdmin) return <AdminApp />;
 
   return (
     <>
