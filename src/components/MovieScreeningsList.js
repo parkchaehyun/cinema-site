@@ -24,6 +24,7 @@ export default function MovieScreeningsList() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const movieRailRef = useRef(null);
+  const movieCardRefs = useRef({});
 
   const updateScrollButtons = () => {
     const rail = movieRailRef.current;
@@ -124,6 +125,9 @@ export default function MovieScreeningsList() {
     setSelectedMovieId(movieId);
     setIsMovieModalOpen(false);
     setMovieSearch('');
+    setTimeout(() => {
+      movieCardRefs.current[movieId]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }, 50);
   };
 
   const scrollMovieRail = (direction) => {
@@ -192,6 +196,7 @@ export default function MovieScreeningsList() {
                   {movies.map(movie => (
                     <button
                       key={movie.id}
+                      ref={el => movieCardRefs.current[movie.id] = el}
                       className="flex-shrink-0 transition-all duration-200"
                       onClick={() => handleMovieSelect(movie.id)}
                     >
