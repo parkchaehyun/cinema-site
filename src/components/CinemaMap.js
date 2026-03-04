@@ -52,6 +52,10 @@ export default function CinemaMap() {
       center: new window.naver.maps.LatLng(SEOUL_CENTER.lat, SEOUL_CENTER.lng),
       zoom: 12,
       mapTypeId: window.naver.maps.MapTypeId.NORMAL,
+      zoomControl: !('ontouchstart' in window),
+      zoomControlOptions: {
+        position: window.naver.maps.Position.TOP_RIGHT,
+      },
     });
     mapInstanceRef.current = map;
 
